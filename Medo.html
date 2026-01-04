@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical App</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fa;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #007bff;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Medical Icons (simple CSS) */
+        .icon-user::before { content: "👤"; }
+        .icon-lock::before { content: "🔒"; }
+        .icon-home::before { content: "🏠"; }
+        .icon-report::before { content: "📄"; }
+        /* Reports List */
+        .report {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .report h3 {
+            margin: 0 0 5px 0;
+        }
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .nav button {
+            width: auto;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Create Account Section -->
+        <div id="create-account">
+            <h1 class="icon-user">Create Account</h1>
+            <input type="text" id="signup-name" placeholder="Full Name" required>
+            <input type="email" id="signup-email" placeholder="Email" required>
+            <input type="password" id="signup-password" placeholder="Password" required>
+            <button onclick="createAccount()">Sign Up</button>
+            <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+            <div id="signup-error" class="error hidden"></div>
+        </div>
+
+        <!-- Login Section -->
+        <div id="login" class="hidden">
+            <h1 class="icon-lock">Login</h1>
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button onclick="login()">Login</button>
+            <p>Don't have an account? <a href="#" onclick="showCreateAccount()">Create Account</a></p>
+            <div id="login-error" class="error hidden"></div>
+        </div>
+
+        <!-- Home Section -->
+        <div id="home" class="hidden">
+            <h1 class="icon-home">Home</h1>
+            <p>Welcome to your Medical Dashboard!</p>
+            <div class="nav">
+                <button onclick="showHome()">Home</button>
+                <button onclick="showReports()">Medical Reports</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Medical Reports Section -->
+        <div id="reports" class="hidden">
+            <h2 class="icon-report">Medical Reports</h2>
+            <div class="nav">
+                <button onclick="showHome()">Home</button>
+                <button onclick="showReports()">Medical Reports</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+            <div id="reports-list">
+                <!-- Simulated Reports -->
+                <div class="report">
+                    <h3>Blood Test - 2023-10-01</h3>
+                    <p>Summary: Normal cholesterol levels. Recommended follow-up in 6 months.</p>
+                </div>
+                <div class="report">
+                    <h3>X-Ray - 2023-09-15</h3>
+                    <p>Summary: No fractures detected. Mild arthritis noted.</p>
+                </div>
+                <div class="report">
+                    <h3>Annual Checkup - 2023-08-20</h3>
+                    <p>Summary: Blood pressure stable. Vaccinations up to date.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock user data (in a real app, this would be on a server)
+        let users = [];
+        let currentUser = null;
+
+        // Show sections
+        function showCreateAccount() {
+            document.getElementById('create-account').classList.remove('hidden');
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('reports').classList.add('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('login').classList.remove('hidden');
+            document.getElementById('create-account').classList.add('hidden');
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('reports').classList.add('hidden');
+        }
+
+        function showHome() {
+            if (!currentUser) return;
+            document.getElementById('home').classList.remove('hidden');
+            document.getElementById('create-account').classList.add('hidden');
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('reports').classList.add('hidden');
+        }
+
+        function showReports() {
+            if (!currentUser) return;
+            document.getElementById('reports').classList.remove('hidden');
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('create-account').classList.add('hidden');
+            document.getElementById('login').classList.add('hidden');
+        }
+
+        function logout() {
+            currentUser = null;
+            showLogin();
+        }
+
+        // Create Account
+        function createAccount() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const errorDiv = document.getElementById('signup-error');
+
+            if (!name || !email || !password) {
+                errorDiv.textContent = 'All fields are required.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Mock save user
+            users.push({ name, email, password });
+            alert('Account created! Please login.');
+            showLogin();
+        }
+
+        // Login
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                currentUser = user;
+                showHome();
+            } else {
+                errorDiv.textContent = 'Invalid email or password.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        // Initialize
+        showCreateAccount();
+    </script>
+</body>
+</html>
